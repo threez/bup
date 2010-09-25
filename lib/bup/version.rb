@@ -1,0 +1,4 @@
+module Bup::Version
+
+end
+

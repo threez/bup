@@ -1,8 +1,27 @@
+h1. System
+
+BUP is simply an akronym for backup.
+BUP is a collection of simple commands to
+store backups on local or remote locations.
+The backup process itself is implemented using
+the "DAR binary":http://dar.linux.free.fr.
+It offers the ability to run a backup process
+as cron job.
+
 h1. Commands
 
-bup init
-bup run <name>
-bup config
-bup list
-bup restore <name>
-bup cron
+h2. bup init
+
+h2. bup run &lt;name&gt;
+
+h2. bup config
+
+h2. bup list
+
+h2. bup restore &lt;name&gt;
+
+h2. bup cron
+
+h1. Environment
+
+h1. Configuration
