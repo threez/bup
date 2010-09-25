@@ -1,0 +1,8 @@
+h1. Commands
+
+bup init
+bup run <name>
+bup config
+bup list
+bup restore <name>
+bup cron
