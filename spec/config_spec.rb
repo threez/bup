@@ -9,8 +9,10 @@ describe Bup::Config do
       :passwd => "test", :user => "test", 
       :root => "/backups", :host => "example.com"
     }
+    config.locations["example"].type.should == :ftp
     config.locations["test"].nil?.should == false
     config.locations["test"].options.should == { :root => "/tmp/backups" }
+    config.locations["test"].type.should == :local
     config.backups["config"].options.should == { :to => "test", :from => "/etc" }
     config.backups["config"].intervals.size.should == 3
     config.backups["config"].intervals[0].type == :full

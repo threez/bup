@@ -2,9 +2,10 @@ class Bup::Config
   attr_reader :locations, :backups
   
   class Location
-    attr_reader :options
+    attr_reader :options, :type
     
-    def initialize(options = {})
+    def initialize(type, options = {})
+      @type = type
       @options = options
     end
   end
@@ -45,7 +46,7 @@ class Bup::Config
   #   passwd: the passwd to use for authentication
   #   root: the path to user
   def ftp(name, options = {})
-    @locations[name] = Location.new(options)
+    @locations[name] = Location.new(:ftp, options)
   end
   
   # defines a local location if your planning to put the backup on a different
@@ -54,7 +55,7 @@ class Bup::Config
   # possible options are:
   #   root: the path to user
   def local(name, options = {})
-    @locations[name] = Location.new(options)
+    @locations[name] = Location.new(:local, options)
   end
   
   # defines a backup with name

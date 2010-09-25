@@ -12,7 +12,7 @@ class Bup::Application
   # returns the configuration
   def config
     if File.exist? filename
-      @config ||= Config.load(filename)
+      @config ||= Bup::Config.load(filename)
     else
       error("bup is can't find config. Please run #{$0} init")
     end
