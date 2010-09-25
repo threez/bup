@@ -18,9 +18,9 @@ module Bup::Commands
   end
   
   STRATEGIE_NAMES = {
-    :full => "Full-Backup",
-    :diff => "Differential-Backup",
-    :inc => "Incremental-Backup"
+    :full => "full backup",
+    :diff => "differential backup",
+    :inc => "incremental backup"
   }
   
   # show current configuration
