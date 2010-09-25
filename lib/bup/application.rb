@@ -1,9 +1,15 @@
 class Bup::Application
+  # returns the path to the configuration file template
+  def self.config_template
+    File.join(File.dirname(__FILE__), "..", "..", "template", "bup.conf")
+  end
+  
   # returns tthe filename for the application configuration
   def filename
     File.join((ENV["BUP_DIR"] || File.join(ENV["HOME"], ".bup")), "config")
   end
   
+  # returns the configuration
   def config
     if File.exist? filename
       @config ||= Config.load(filename)
@@ -50,19 +56,19 @@ class Bup::Application
     if command = ARGV.shift
       case command
       when "init"
-        Bup::Commands.init
+        Bup::Commands.init(self)
       when "create"
         name = shift_or_error("no name specified!")
-        Bup::Commands.create(config, name)
+        Bup::Commands.create(self, name)
       when "config"
-        Bup::Commands.config(config)
+        Bup::Commands.config(self)
       when "list"
-        Bup::Commands.list(config)
+        Bup::Commands.list(self)
       when "restore"
         name = shift_or_error("no name specified!")
-        Bup::Commands.restore(config, name)
+        Bup::Commands.restore(self, name)
       when "cron"
-        Bup::Commands.cron(config)
+        Bup::Commands.cron(self)
       when "version"
         show_usage!
       else
