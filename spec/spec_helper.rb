@@ -5,6 +5,7 @@ begin
   require "rspec"
 rescue LoadError
   require "rubygems"
+  gem "rspec", "2.0.0.beta.22"
   require "rspec"
 end
 
