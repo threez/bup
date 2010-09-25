@@ -2,7 +2,7 @@ module Bup::Commands
   def self.init
   end
 
-  def self.run(name)
+  def self.create(name)
   end
   
   def self.config

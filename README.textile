@@ -12,7 +12,7 @@ h1. Commands
 
 h2. bup init
 
-h2. bup run &lt;name&gt;
+h2. bup create &lt;name&gt;
 
 h2. bup config
 
