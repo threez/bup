@@ -12,20 +12,50 @@ module Bup::Commands
     end
   end
 
-  # create a new backup
+  # create a new backup with name
   def self.create(app, name)
     
   end
   
+  STRATEGIE_NAMES = {
+    :full => "Full-Backup",
+    :diff => "Differential-Backup",
+    :inc => "Incremental-Backup"
+  }
+  
+  # show current configuration
   def self.config(app)
+    config = app.config
+    puts "Locations:"
+    for name, location in config.locations do
+      puts "  #{name} (#{location.type})"
+      for key, value in location.options
+        puts "    #{key}: #{value}"
+      end
+    end
+    puts "Backups:"
+    for name, backup in config.backups do
+      puts "  #{name} (#{backup.options[:from]} ==> #{backup.options[:to]})"
+      for interval in backup.intervals do
+        name = STRATEGIE_NAMES[interval.type]
+        puts "    create one #{name} every " \
+             "#{distance_of_time_in_words(interval.time)}"
+      end
+    end
   end
   
+  # show backups that have been made
   def self.list(app)
+    
   end
   
+  # restore a named backuo
   def self.restore(app, name)
+    
   end
   
+  # creates the contab based on the configuration
   def self.cron(app)
+    
   end
 end
