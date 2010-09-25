@@ -2,19 +2,19 @@ module Bup::Commands
   def self.init
   end
 
-  def self.create(name)
+  def self.create(config, name)
   end
   
-  def self.config
+  def self.config(config)
   end
   
-  def self.list
+  def self.list(config)
   end
   
   def self.restore(name)
   end
   
-  def self.cron
+  def self.cron(config)
   end
 end
 

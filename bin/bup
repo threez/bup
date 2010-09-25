@@ -4,4 +4,4 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "..", "lib")
 # load the application stack
 require "bup"
 
-Bup::Application.start!
+Bup::Application.new.start!
