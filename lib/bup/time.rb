@@ -48,18 +48,27 @@ def minute
   1.minute
 end
 
-def distance_of_time_in_words(seconds)
-  single = {
-    month => "month",
-    week => "week",
-    day => "day",
-    hour => "hour",
-    minute => "minute"
-  }[seconds]
-  
-  unless single
-  
-  else
-    single
+def distance_of_time_in_words(seconds, first = true)
+  if seconds >= month
+    r = seconds % month
+    s = "#{(seconds - r) / month} month" + ((seconds - r) / month > 1 ? "s" : "")
+  elsif seconds >= week
+    r = seconds % week
+    s = "#{(seconds - r) / week} week" + ((seconds - r) / week > 1 ? "s" : "")
+  elsif seconds >= day
+    r = seconds % day
+    s = "#{(seconds - r) / day} day" + ((seconds - r) / day > 1 ? "s" : "")
+  elsif seconds >= hour
+    r = seconds % hour
+    s = "#{(seconds - r) / hour} hour" + ((seconds - r) / hour > 1 ? "s" : "")
+  elsif seconds >= minute
+    r = seconds % minute
+    s = "#{(seconds - r) / minute} minute" + ((seconds - r) / minute > 1 ? "s" : "")
   end
+  if r < minute
+    s += " and #{r} seconds"
+  else
+    s += ", #{distance_of_time_in_words(r, false)}"
+  end if r > 0
+  s
 end
