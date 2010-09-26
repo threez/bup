@@ -23,6 +23,7 @@ class Bup::Application
     puts "bup - easy backup - version #{Bup::Version}"
     puts "Usage: #{$0} <command> [options]"
     puts "  init            initialize the directories and configuration"
+    puts "  edit            edit configuration with your favourite editor"
     puts "  create <name>   create backup with name"
     puts "  config          show the current configuration"
     puts "  list            list all backups from the locations"
@@ -57,6 +58,8 @@ class Bup::Application
       case command
       when "init"
         Bup::Commands.init(self)
+      when "edit"
+        Bup::Commands.edit(self)
       when "create"
         name = shift_or_error("no name specified!")
         Bup::Commands.create(self, name)

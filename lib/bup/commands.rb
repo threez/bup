@@ -11,6 +11,19 @@ module Bup::Commands
       app.error "the configuration file #{app.filename} already exists!"
     end
   end
+  
+  # edit the configuration file with the default editor
+  def self.edit(app)
+    if File.exists? app.filename
+      if ENV["EDITOR"]
+        system(ENV["EDITOR"] + " #{app.filename}")
+      else
+        app.error "the environment variable EDITOR is unset. Can't open editor!"
+      end
+    else
+      app.error "the configuration file #{app.filename} doesn't exists!"
+    end
+  end
 
   # create a new backup with name
   def self.create(app, name)
