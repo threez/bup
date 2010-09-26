@@ -1,5 +1,6 @@
+require 'net/ftp'
+
 class Bup::Locations::Ftp
-  require 'net/ftp'
 
   attr_accessor :opts, :ftp
   
