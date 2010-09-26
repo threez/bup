@@ -1,6 +1,7 @@
 class Bup::Config
   class MissingValueException < Exception; end
   class DuplicateEntryException < Exception; end
+  class IntervalException < Exception; end
   
   attr_reader :locations, :backups
   
@@ -24,13 +25,16 @@ class Bup::Config
       instance_eval(&block)
     end
     
-    # definea a backup strategie and interval
+    # define a backup strategie and interval
     # time: the interval in seconds
     # type: either on of the following
     #   :full (full backup)
     #   :diff (differential backup)
     #   :inc  (incrementa backup)
     def every(time, type)
+      if time < minute || time % minute != 0
+        raise IntervalException.new("time must be in minutes or higher")
+      end
       @intervals << Strategie.new(time, type)
     end
   end

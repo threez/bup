@@ -21,7 +21,7 @@ class Bup::Application
   # shows the usage on the command line
   def show_usage!
     puts "bup - easy backup - version #{Bup::Version}"
-    puts "Usage: #{$0} <command> [options]"
+    puts "usage: #{$0} <command> [options]"
     puts "  init            initialize the directories and configuration"
     puts "  edit            edit configuration with your favourite editor"
     puts "  create <name>   create backup with name"
@@ -80,9 +80,26 @@ class Bup::Application
     else
       error "no command specified!"
     end
+  rescue Bup::Config::IntervalException => ex
+    STDERR.puts "[interval] error in the configuration: #{ex}"
+    clean_trace ex
+    exit 10
   rescue Bup::Config::DuplicateEntryException => ex
-    error "[duplicate] error in the configuration #{filename}: #{ex}"
+    STDERR.puts "[duplicate] error in the configuration: #{ex}"
+    clean_trace ex
+    exit 11
   rescue Bup::Config::MissingValueException => ex
-    error "[missing value] error in the configuration #{filename}: #{ex}"
+    STDERR.puts "[missing value] error in the configuration: #{ex}"
+    clean_trace ex
+    exit 12
+  end
+  
+private
+  
+  # returns the trace of the config
+  def clean_trace(exception)
+    trace = exception.backtrace.select { |l| l.match(filename) }
+    file, line, *rest = trace.first.split(":")
+    STDERR.puts "file #{file} at line #{line}"
   end
 end
