@@ -1,18 +1,10 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-describe Bup::Locations::Ftp do
+describe Bup::Locations::Local do
   before(:all) do
-    @loc = Bup::Locations::Ftp.new(
-      :host => "",
-      :user => "", 
-      :password => "",
-      :root => "")
-    
+    tmp_dir = "/tmp"
+    @loc = Bup::Locations::Local.new(:root => tmp_dir)
     @tmp_name = "test#{Time.now.to_i}"
-  end
-
-  after(:all) do
-    @loc.disconnect
   end
 
   def should_exist(name) 
@@ -21,10 +13,6 @@ describe Bup::Locations::Ftp do
 
   def should_not_exist(name) 
     @loc.ls.include?(name).should eql false
-  end
-
-  it "should establish a connection to remote location" do
-    @loc.ftp.closed?.should eql false
   end
 
   it "should be possible to create and delete a folder" do
