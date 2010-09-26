@@ -9,6 +9,10 @@ class Bup::Locations::Ftp
     connect
   end
 
+  def prefix(basename)
+    File.join(@opts[:root], basename)
+  end
+
   def disconnect 
     @ftp.close if not @ftp.nil? and not @ftp.closed?
   end
@@ -22,28 +26,29 @@ class Bup::Locations::Ftp
 
   def mkdir(dir)
     connect    
-    @ftp.mkdir(dir)
+    @ftp.mkdir(prefix(dir))
   end
   
   def rmdir(dir)
     connect
-    @ftp.rmdir(dir)
+    @ftp.rmdir(prefix(dir))
   end
   
-  def ls
+  def ls(dir = ".")
     connect
+    @ftp.chdir(prefix(dir)) if dir != "."
     @ftp.nlst
   end
 
   def cp(src, dest = ".")
     connect 
-    @ftp.chdir(dest)
+    @ftp.chdir(prefix(dest))
     @ftp.putbinaryfile(src)
   end
 
   def rm(file)
     connect
-    @ftp.delete(file)
+    @ftp.delete(prefix(file))
   end
   
 end
