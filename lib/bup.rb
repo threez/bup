@@ -10,6 +10,6 @@ path = File.expand_path(File.dirname(__FILE__))
 for file in %w{time commands config dar version application} do
   require File.join(path, "bup", file)
 end
-for location in Dir["#{path}/locations/*.rb"] do
+for location in Dir["#{path}/bup/locations/*.rb"] do
   require location
 end
