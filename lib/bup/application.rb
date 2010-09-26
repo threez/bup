@@ -77,5 +77,7 @@ class Bup::Application
     else
       error "no command specified!"
     end
+  rescue Config::MissingValueException => ex
+    error "Error in the configuration #{filename}: #{ex}"
   end
 end

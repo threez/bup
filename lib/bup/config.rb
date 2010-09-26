@@ -1,19 +1,23 @@
 class Bup::Config
+  class MissingValueException < Exception; end
+  
   attr_reader :locations, :backups
   
   class Location
-    attr_reader :options, :type
+    attr_reader :name, :options, :type
     
-    def initialize(type, options = {})
+    def initialize(name, type, options = {})
+      @name = name
       @type = type
       @options = options
     end
   end
   
   class Backup
-    attr_reader :options, :intervals
+    attr_reader :name, :options, :intervals
     
-    def initialize(options = {}, &block)
+    def initialize(name, options = {}, &block)
+      @name = name
       @options = options
       @intervals = []
       instance_eval(&block)
@@ -46,7 +50,9 @@ class Bup::Config
   #   passwd: the passwd to use for authentication
   #   root: the path to user
   def ftp(name, options = {})
-    @locations[name] = Location.new(:ftp, options)
+    check_for_options("%s undefined for ftp location #{name}", options, 
+                      %w{host user passwd root})
+    @locations[name] = Location.new(name, :ftp, options)
   end
   
   # defines a local location if your planning to put the backup on a different
@@ -55,7 +61,9 @@ class Bup::Config
   # possible options are:
   #   root: the path to user
   def local(name, options = {})
-    @locations[name] = Location.new(:local, options)
+    check_for_options("%s undefined for local location #{name}", options, 
+                      %w{root})
+    @locations[name] = Location.new(name, :local, options)
   end
   
   # defines a backup with name
@@ -64,7 +72,9 @@ class Bup::Config
   #   to: the name of the location (e.g. "test" would be the local /tmp/backups)
   #   from: path to the location that should be backuped
   def backup(name, options = {}, &block)
-    @backups[name] = Backup.new(options, &block)
+    check_for_options("%s undefined for backup #{name}", options, 
+                      %w{to from})
+    @backups[name] = Backup.new(name, options, &block)
   end
   
   # create a new configuration
@@ -78,6 +88,15 @@ class Bup::Config
   def self.load(file)
     new do
       eval(File.read(file), binding, file)
+    end
+  end
+  
+private
+  
+  # check that all fields (array) are in the options hash
+  def check_for_options(str, options, fields)
+    for field in fields do
+      raise MissingValueException.new(str % [field]) unless options[field.to_sym]
     end
   end
 end

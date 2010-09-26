@@ -22,4 +22,35 @@ describe Bup::Config do
     config.backups["config"].intervals[1].type == 604800
     config.backups["config"].intervals[2].type == 86400
   end
+  
+  it "should find missing value errors in ftp" do
+    lambda do
+      Bup::Config.new { ftp "test" }
+    end.should raise_error(Bup::Config::MissingValueException)
+    lambda do
+      Bup::Config.new { ftp "test", :passwd => "test" }
+    end.should raise_error(Bup::Config::MissingValueException)
+    lambda do
+      Bup::Config.new { ftp "test", :passwd => "test", :user => "test" }
+    end.should raise_error(Bup::Config::MissingValueException)
+    lambda do
+      Bup::Config.new { ftp "test", :passwd => "test", :user => "test", 
+      :root => "/backups" }
+    end.should raise_error(Bup::Config::MissingValueException)
+  end
+  
+  it "should find missing value errors in local" do
+    lambda do
+      Bup::Config.new { local "test" }
+    end.should raise_error(Bup::Config::MissingValueException)
+  end
+  
+  it "should find missing value errors in local" do
+    lambda do
+      Bup::Config.new { backup "test" }
+    end.should raise_error(Bup::Config::MissingValueException)
+    lambda do
+      Bup::Config.new { backup "test", :to => "" }
+    end.should raise_error(Bup::Config::MissingValueException)
+  end
 end
