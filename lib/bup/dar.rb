@@ -3,16 +3,18 @@ module Bup::Dar
   
   end
 
-  def create(options = {})
-    
+  def self.create(options = {})
+    p options
   end
   
-  def restore(backup, options = {})
-    
+  def self.restore(backup, options = {})
+    p backup
+    p options
   end
   
-  def verify(backup, options = {})
-    
+  def self.verify(backup, options = {})
+    p backup
+    p options
   end
 end
 

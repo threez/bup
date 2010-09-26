@@ -68,4 +68,21 @@ describe Bup::Config do
       }
     end.should raise_error(Bup::Config::DuplicateEntryException)
   end
+  
+  it "should rais an exception on time intervals that are to small" do
+    lambda do
+      Bup::Config.new {
+        backup("test", :to => "", :from => "") {
+          every 3, :full
+        }
+      }
+    end.should raise_error(Bup::Config::IntervalException)
+    lambda do
+      Bup::Config.new {
+        backup("test", :to => "", :from => "") {
+          every 3.minutes + 3, :full
+        }
+      }
+    end.should raise_error(Bup::Config::IntervalException)
+  end
 end
