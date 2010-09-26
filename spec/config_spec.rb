@@ -53,4 +53,19 @@ describe Bup::Config do
       Bup::Config.new { backup "test", :to => "" }
     end.should raise_error(Bup::Config::MissingValueException)
   end
+  
+  it "should find duplicate definitions" do
+    lambda do
+      Bup::Config.new {
+        local "test", :root => ""
+        local "test", :root => ""
+      }
+    end.should raise_error(Bup::Config::DuplicateEntryException)
+    lambda do
+      Bup::Config.new {
+        backup("test", :to => "", :from => "") {}
+        backup("test", :to => "", :from => "") {}
+      }
+    end.should raise_error(Bup::Config::DuplicateEntryException)
+  end
 end
