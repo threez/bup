@@ -80,7 +80,9 @@ class Bup::Application
     else
       error "no command specified!"
     end
-  rescue Config::MissingValueException => ex
-    error "Error in the configuration #{filename}: #{ex}"
+  rescue Bup::Config::DuplicateEntryException => ex
+    error "[duplicate] error in the configuration #{filename}: #{ex}"
+  rescue Bup::Config::MissingValueException => ex
+    error "[missing value] error in the configuration #{filename}: #{ex}"
   end
 end
