@@ -4,15 +4,25 @@ class Bup::Application
     File.join(File.dirname(__FILE__), "..", "..", "template", "bup.conf")
   end
   
-  # returns tthe filename for the application configuration
-  def filename
-    File.join((ENV["BUP_DIR"] || File.join(ENV["HOME"], ".bup")), "config")
+  # returns the filename for the application configuration
+  def config_filename
+    File.join(application_dir, "config")
+  end
+  
+  # returns the filename for the backup log
+  def log_filename
+    File.join(application_dir, "log")
+  end
+  
+  # returns the bup directory
+  def application_dir
+    ENV["BUP_DIR"] || File.join(ENV["HOME"], ".bup")
   end
   
   # returns the configuration
   def config
-    if File.exist? filename
-      @config ||= Bup::Config.load(filename)
+    if File.exist? config_filename
+      @config ||= Bup::Config.load(config_filename)
     else
       error("bup is can't find config. Please run #{$0} init")
     end
@@ -98,7 +108,7 @@ private
   
   # returns the trace of the config
   def clean_trace(exception)
-    trace = exception.backtrace.select { |l| l.match(filename) }
+    trace = exception.backtrace.select { |l| l.match(config_filename) }
     file, line, *rest = trace.first.split(":")
     STDERR.puts "file #{file} at line #{line}"
   end
