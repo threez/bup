@@ -1,0 +1,10 @@
+h2. config
+
+* encryption mechanism
+
+h2. misc
+
+* logfile 
+* encryption strategy
+* archive cleanup
+
