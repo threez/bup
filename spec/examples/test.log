@@ -1,0 +1,7 @@
+config:
+  1285959710:
+    type: :full
+    location: test
+    local_path: nil
+    dar:
+      a: 1
