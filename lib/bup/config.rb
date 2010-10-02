@@ -8,7 +8,7 @@ class Bup::Config
   class Location
     attr_reader :name, :options, :type
     
-    def initialize(name, type, options = {})
+    def initialize(name, type, options = {}, &block)
       @name = name
       @type = type
       @options = options
@@ -54,11 +54,8 @@ class Bup::Config
   #   user: the user to use for authentication
   #   passwd: the passwd to use for authentication
   #   root: the path to user
-  def ftp(name, options = {})
-    check_for_options("%s undefined for ftp location #{name}", options, 
-                      %w{host user passwd root})
-    check_for_duplicate_location(name)
-    @locations[name] = Location.new(name, :ftp, options)
+  def ftp(name, options = {}, &block)
+    location(:ftp, %w{host user passwd root}, name, options, &block)
   end
   
   # defines a local location if your planning to put the backup on a different
@@ -66,11 +63,17 @@ class Bup::Config
   # usage: local name, options
   # possible options are:
   #   root: the path to user
-  def local(name, options = {})
-    check_for_options("%s undefined for local location #{name}", options, 
-                      %w{root})
+  def local(name, options = {}, &block)
+    location(:local, %w{root}, name, options, &block)
+  end
+  
+  # adds a location to the configuration
+  def location(type, params, name, options = {}, &block)
     check_for_duplicate_location(name)
-    @locations[name] = Location.new(name, :local, options)
+    location = Location.new(name, type, options, &block)
+    check_for_options "%s undefined for #{type} location #{name}", 
+                      location.options, params
+    @locations[name] = location
   end
   
   # defines a backup with name
