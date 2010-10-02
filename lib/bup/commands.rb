@@ -36,7 +36,7 @@ module Bup::Commands
                   "for backup '#{name}'"
       end
     else
-      app.error "the backup '#{name}' doesn't exist!"
+      app.error "the backup configuration '#{name}' doesn't exist!"
     end
   end
   
