@@ -12,6 +12,16 @@ class Bup::Config
       @name = name
       @type = type
       @options = options
+      instance_eval(&block) if block_given?
+    end
+    
+    # add setter for all host, user, passwd and root
+    def method_missing(m, *args, &block)
+      if [:host, :user, :passwd, :root].include? m
+        @options[m] = args.first
+      else
+        super(m, *args, &block)
+      end
     end
   end
   
@@ -22,7 +32,16 @@ class Bup::Config
       @name = name
       @options = options
       @intervals = []
-      instance_eval(&block)
+      instance_eval(&block) if block_given?
+    end
+    
+    # add setter for all to, from, key and split
+    def method_missing(m, *args, &block)
+      if [:to, :from, :key, :split].include? m
+        @options[m] = args.first
+      else
+        super(m, *args, &block)
+      end
     end
     
     # define a backup strategie and interval
@@ -37,6 +56,14 @@ class Bup::Config
       end
       @intervals << Strategie.new(time, type)
     end
+    
+    # short/long verisons of types
+    
+    def full; :full end
+    def diff; :differential end
+    alias differential diff
+    def inc; :incremental end
+    alias incremental inc
   end
   
   class Strategie
@@ -82,10 +109,11 @@ class Bup::Config
   #   to: the name of the location (e.g. "test" would be the local /tmp/backups)
   #   from: path to the location that should be backuped
   def backup(name, options = {}, &block)
-    check_for_options("%s undefined for backup #{name}", options, 
-                      %w{to from})
+    backup = Backup.new(name, options, &block)
     check_for_duplicate_backup(name)
-    @backups[name] = Backup.new(name, options, &block)
+    check_for_options("%s undefined for backup #{name}", backup.options, 
+                      %w{to from})
+    @backups[name] = backup
   end
   
   # create a new configuration
