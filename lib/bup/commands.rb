@@ -28,10 +28,19 @@ module Bup::Commands
   # create a new backup with name
   def self.create(app, name)
     config = app.config
-    if backup = config.backups[name]
-      if location = config.locations[backup.options[:to]]
-        Bup::Dar.create(:backup => backup, :location => location)
-      else#
+    if backup_config = config.backups[name]
+      if location = config.locations[backup_config.options[:to]]
+        # get next type and reference
+        scheduler = Bup::Scheduler.new(app)
+        type = scheduler.next_type(backup_config)
+        reference = scheduler.reference(name, type)
+        
+        # create the backup
+        backup = Bup::Dar.create :backup_config => backup_config, :type => type, 
+                                 :reference => reference
+        
+        # TODO insert the backup into the log and push to location [vila]
+      else
         app.error "the location '#{backup.options[:to]}' doesn't exist " \
                   "for backup '#{name}'"
       end
@@ -69,16 +78,20 @@ module Bup::Commands
   
   # show backups that have been made
   def self.list(app)
-    
+    log = Bup::Scheduler::Log.new(app.log_filename)
+    for backup_name, backups in log do
+      puts "#{backup_name}"
+      # TODO implement list command
+    end
   end
   
   # restore a named backuo
   def self.restore(app, name)
-    
+    # TODO implement restore command
   end
   
   # creates the contab based on the configuration
   def self.cron(app)
-    
+    # TODO implement cron command
   end
 end
