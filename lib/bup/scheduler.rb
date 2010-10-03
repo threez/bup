@@ -32,11 +32,13 @@ class Bup::Scheduler
   
   def initialize(app)
     @log = Log.new(app.log_filename)
+    @app = app
   end
   
   # returns the next backup that should be made based on the log and the backup
-  def next_type(backup, from = Time.now)
-    
+  def next_type(backup_name, from = Time.now)
+    #backup = @app.config.backups[backup_name]
+    :full
   end
   
   # returns the reference for a type if there is one, otherwise nil
