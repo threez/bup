@@ -7,7 +7,7 @@ rescue LoadError
   require "rubygems"
   gem "rspec", "2.0.0.beta.22"
   require "rspec"
-end
+end unless defined? describe
 
 # load the application stack
 require "bup"
