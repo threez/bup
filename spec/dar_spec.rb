@@ -1,19 +1,22 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
 
-
-
 describe Bup::Dar do
 
   before(:all) do
     timestamp = Time.now.to_i
     @backup_root = "/tmp/bup-#{timestamp}"
     @archives_path = "/tmp/bup_archives-#{timestamp}"
-    create_test_data()
+  
+    # create directories and testdata
+    FileUtils.mkdir_p(@backup_root)
+    FileUtils.mkdir_p(@archives_path)
+    create_test_data(@backup_root)
   end
 
   after(:all) do
-    FileUtils.remove_dir(@backup_root)
-    FileUtils.remove_dir(@archives_path)
+    # remove them afterwards
+    FileUtils.rm_rf(@backup_root)
+    FileUtils.rm_rf(@archives_path)
   end
 
   it "should possible to create a full backup" do
@@ -30,19 +33,17 @@ TODO
 
   end
 
-
-  def create_test_data()
-    Dir.mkdir(@backup_root)
-    Dir.mkdir(@archives_path)
-    (0..100).each do |i|
-        File.open("#{@backup_root}/file#{i}.txt", 'w') do |f|
-	   f.write(create_random_string(200))
-	end
+  # creates test data in the passed root
+  def create_test_data(backup_path, count = 100, size = 200)
+    count.times do |i|
+      File.open("#{backup_path}/file#{i}.txt", 'w') do |f|
+	      f.write(random_string(size))
+	    end
     end
   end
-
-  def create_random_string(length)
-    (0...length).map{65.+(rand(25)).chr}.join
-  end
   
+  # returns a random string of ascii upperletter chars with the passed length
+  def random_string(length)
+    Array.new(length){65+rand(25)}.pack("c"*200)
+  end
 end
