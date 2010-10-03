@@ -1,7 +1,6 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
 
 describe Bup::Dar do
-
   before(:all) do
     timestamp = Time.now.to_i
     @backup_root = "/tmp/bup-#{timestamp}"
@@ -24,13 +23,8 @@ describe Bup::Dar do
       :archives_path => @archives_path}
     
     Bup::Dar::create(:backup_config => conf, :type => :full)
-
-=begin
-TODO 
- extract archive and compare files with original
- make test data path relative to project
-=end
-
+    # TODO extract archive and compare files with original
+    # make test data path relative to project [ruje]
   end
 
   # creates test data in the passed root
@@ -44,6 +38,6 @@ TODO
   
   # returns a random string of ascii upperletter chars with the passed length
   def random_string(length)
-    Array.new(length){65+rand(25)}.pack("c"*200)
+    Array.new(length){65+rand(25)}.pack("c"*length)
   end
 end
