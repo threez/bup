@@ -59,17 +59,12 @@ end
 # returns a string that represents the seconds as string in english
 def distance_of_time_in_words(seconds)
   # check the big numbers
-  if seconds >= month
-    rest, str = unit_for(seconds, "month", month)
-  elsif seconds >= week
-    rest, str = unit_for(seconds, "week", week)
-  elsif seconds >= day
-    rest, str = unit_for(seconds, "day", day)
-  elsif seconds >= hour
-    rest, str = unit_for(seconds, "hour", hour)
-  elsif seconds >= minute
-    rest, str = unit_for(seconds, "minute", minute)
-  end
+  rest, str = if    seconds >= month  then unit_for(seconds, "month", month)
+              elsif seconds >= week   then unit_for(seconds, "week", week)
+              elsif seconds >= day    then unit_for(seconds, "day", day)
+              elsif seconds >= hour   then unit_for(seconds, "hour", hour)
+              elsif seconds >= minute then unit_for(seconds, "minute", minute)
+              end
   
   if rest > 0
     # add recursive if bigger than a minute otherwise append the seconds
