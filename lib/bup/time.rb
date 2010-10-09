@@ -48,27 +48,34 @@ def minute
   1.minute
 end
 
+# returns a string for the passed seconds using the name and an interval_size
+def unit_for(seconds, name, interval_size)
+  non_dividable = seconds % interval_size
+  units = (seconds - non_dividable) / interval_size
+  string = "#{units} #{name}" + (units > 1 ? "s" : "") # pluralization (s)
+  [non_dividable, string]
+end
+
+# returns a string that represents the seconds as string in english
 def distance_of_time_in_words(seconds, first = true)
+  # check the big numbers
   if seconds >= month
-    r = seconds % month
-    s = "#{(seconds - r) / month} month" + ((seconds - r) / month > 1 ? "s" : "")
+    rest, str = unit_for(seconds, "month", month)
   elsif seconds >= week
-    r = seconds % week
-    s = "#{(seconds - r) / week} week" + ((seconds - r) / week > 1 ? "s" : "")
+    rest, str = unit_for(seconds, "week", week)
   elsif seconds >= day
-    r = seconds % day
-    s = "#{(seconds - r) / day} day" + ((seconds - r) / day > 1 ? "s" : "")
+    rest, str = unit_for(seconds, "day", day)
   elsif seconds >= hour
-    r = seconds % hour
-    s = "#{(seconds - r) / hour} hour" + ((seconds - r) / hour > 1 ? "s" : "")
+    rest, str = unit_for(seconds, "hour", hour)
   elsif seconds >= minute
-    r = seconds % minute
-    s = "#{(seconds - r) / minute} minute" + ((seconds - r) / minute > 1 ? "s" : "")
+    rest, str = unit_for(seconds, "minute", minute)
   end
-  if r < minute
-    s += " and #{r} seconds"
+  
+  # add recursive if bigger than a minute otherwise append the seconds
+  if rest < minute
+    str += " and #{rest} seconds"
   else
-    s += ", #{distance_of_time_in_words(r, false)}"
-  end if r > 0
-  s
+    str += ", #{distance_of_time_in_words(rest, false)}"
+  end if rest > 0
+  str
 end
