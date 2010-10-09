@@ -2,46 +2,41 @@ class Bup::Config
   class MissingValueException < Exception; end
   class DuplicateEntryException < Exception; end
   class IntervalException < Exception; end
-  
-  attr_reader :locations, :backups
-  
-  class Location
-    attr_reader :name, :options, :type
-    
-    def initialize(name, type, options = {}, &block)
+  class ConfigItem
+    def initialize(name, options = {}, &block)
       @name = name
-      @type = type
       @options = options
       instance_eval(&block) if block_given?
     end
     
-    # add setter for all host, user, passwd and root
-    def method_missing(m, *args, &block)
-      if [:host, :user, :passwd, :root].include? m
-        @options[m] = args.first
-      else
-        super(m, *args, &block)
+    def self.options(*names)
+      names.each do |name|
+        define_method(name) do |arg|
+          @options[name] = arg
+        end
       end
     end
   end
   
-  class Backup
+  attr_reader :locations, :backups
+  
+  class Location < ConfigItem
+    attr_reader :name, :options, :type
+    options :host, :user, :passwd, :root
+    
+    def initialize(name, type, options = {}, &block)
+      @type = type
+      super(name, options, &block)
+    end
+  end
+  
+  class Backup < ConfigItem
     attr_reader :name, :options, :intervals
+    options :to, :from, :key, :split
     
     def initialize(name, options = {}, &block)
-      @name = name
-      @options = options
       @intervals = []
-      instance_eval(&block) if block_given?
-    end
-    
-    # add setter for all to, from, key and split
-    def method_missing(m, *args, &block)
-      if [:to, :from, :key, :split].include? m
-        @options[m] = args.first
-      else
-        super(m, *args, &block)
-      end
+      super(name, options, &block)
     end
     
     # define a backup strategie and interval
@@ -134,15 +129,18 @@ private
   
   # check if the backup already exist
   def check_for_duplicate_backup(name)
-    if @backups[name]
-      raise DuplicateEntryException.new "the backup #{name} is already defined"
-    end
+    check_for_duplicate(name, @backups, "backup")
   end
   
   # check if the location already exist
   def check_for_duplicate_location(name)
-    if @locations[name]
-      raise DuplicateEntryException.new "the location #{name} is already defined"
+    check_for_duplicate(name, @locations, "location")
+  end
+  
+  # check if the name is already in where and raise if so
+  def check_for_duplicate(name, where, desc)
+    if where[name]
+      raise DuplicateEntryException.new "the #{desc} #{name} is already defined"
     end
   end
   
