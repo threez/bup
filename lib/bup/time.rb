@@ -50,14 +50,14 @@ end
 
 # returns a string for the passed seconds using the name and an interval_size
 def unit_for(seconds, name, interval_size)
-  non_dividable = seconds % interval_size
-  units = (seconds - non_dividable) / interval_size
-  string = "#{units} #{name}" + (units > 1 ? "s" : "") # pluralization (s)
-  [non_dividable, string]
+  rest = seconds % interval_size
+  units = (seconds - rest) / interval_size
+  str = "#{units} #{name}" + (units > 1 ? "s" : "") # pluralization (s)
+  [rest, str]
 end
 
 # returns a string that represents the seconds as string in english
-def distance_of_time_in_words(seconds, first = true)
+def distance_of_time_in_words(seconds)
   # check the big numbers
   if seconds >= month
     rest, str = unit_for(seconds, "month", month)
@@ -71,11 +71,11 @@ def distance_of_time_in_words(seconds, first = true)
     rest, str = unit_for(seconds, "minute", minute)
   end
   
-  # add recursive if bigger than a minute otherwise append the seconds
-  if rest < minute
-    str += " and #{rest} seconds"
+  if rest > 0
+    # add recursive if bigger than a minute otherwise append the seconds
+    str += (rest < minute) ? " and " + units_for(seconds, "second", 1) :
+                             ", "    + distance_of_time_in_words(rest)
   else
-    str += ", #{distance_of_time_in_words(rest, false)}"
-  end if rest > 0
-  str
+    str # complete units string
+  end
 end
