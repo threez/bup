@@ -1,21 +1,30 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
+require 'digest/sha1'
+require 'find'
 
 describe Bup::Dar do
   before(:all) do
     timestamp = Time.now.to_i
-    @backup_root = "/tmp/bup-#{timestamp}"
-    @archives_path = "/tmp/bup_archives-#{timestamp}"
-  
+    @backup_root = "tmp/bup-#{timestamp}"
+    @archives_path = "tmp/bup_archives-#{timestamp}"
+    @dirs_tmp = Array.new 
     # create directories and testdata
-    FileUtils.mkdir_p(@backup_root)
-    FileUtils.mkdir_p(@archives_path)
+    mkdir_tmp(@backup_root)
+    mkdir_tmp(@archives_path)
+    mkdir_tmp(@backup_root)
     create_test_data(@backup_root)
   end
 
+  def mkdir_tmp(path)
+    FileUtils.mkdir_p(path)
+    @dirs_tmp << path
+  end
+
   after(:all) do
-    # remove them afterwards
-    FileUtils.rm_rf(@backup_root)
-    FileUtils.rm_rf(@archives_path)
+    # remove testdata afterwards
+    @dirs_tmp.each do |path|
+      FileUtils.rm_rf(path)
+    end
   end
 
   it "should possible to create a full backup" do
@@ -23,8 +32,26 @@ describe Bup::Dar do
       :archives_path => @archives_path}
     
     Bup::Dar::create(:backup_config => conf, :type => :full)
-    # TODO extract archive and compare files with original
-    # make test data path relative to project [ruje]
+
+    restored_path = Bup::Dar::restore(:overwrite => true, :silent => true, :backup_config => conf)
+    @dirs_tmp << restored_path
+    content_equals?(conf[:root], restored_path).should == true
+  end
+
+  # compares the files in orignal_path and restored_path by their SHA1 checksums
+  # returns true if restored_path is an exact copy of original_path
+  def content_equals?(original_path, restored_path)
+    checksums = Hash.new
+
+    [original_path, restored_path].each do |path|
+      checksums[path.to_sym] = Array.new
+      Find.find(path) do |f|
+	checksums[path.to_sym] << Digest::SHA1.file(f).hexdigest if File.file?(f)
+      end
+      checksums[path.to_sym].sort
+    end
+
+    checksums[original_path.to_sym] == checksums[restored_path.to_sym]
   end
 
   # creates test data in the passed root

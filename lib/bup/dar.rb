@@ -1,8 +1,6 @@
 module Bup::Dar
 
   def self.create(options = {})
-    p options
-
     conf = options[:backup_config]
     ref = options[:reference]
     type = options[:type]
@@ -24,14 +22,20 @@ module Bup::Dar
     system("dar #{dar_params}")
   end
   
-  def self.restore(backup, options = {})
-    p backup
-    p options
+  def self.restore(options = {})
+    conf = options[:backup_config]
+    root = "#{conf[:root]}#{("_R"+Time.now.to_i.to_s) if options[:overwrite]}"
+    FileUtils.mkdir_p root
+    dar_params = "-x #{conf[:archives_path]}/#{conf[:name]} -R #{root} #{"-O" if options[:silent]}"
+    system("dar #{dar_params}")
+    root
   end
   
   def self.verify(backup, options = {})
     p backup
-    p options
+    conf = options[:backup_config]
+    dar_params = "-t #{conf[:archives_path]}/#{conf[:name]}"
+    system("dar #{dar_params}")
   end
 
   def self.test(options = {})
