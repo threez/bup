@@ -11,3 +11,9 @@ end unless defined? describe
 
 # load the application stack
 require "bup"
+require "mocks"
+
+# returns the file with passed name (searches in examples folder)
+def example_file(name)
+  File.join(File.dirname(__FILE__), "examples", name)
+end
