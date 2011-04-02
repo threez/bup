@@ -48,27 +48,29 @@ def minute
   1.minute
 end
 
-def distance_of_time_in_words(seconds, first = true)
-  if seconds >= month
-    r = seconds % month
-    s = "#{(seconds - r) / month} month" + ((seconds - r) / month > 1 ? "s" : "")
-  elsif seconds >= week
-    r = seconds % week
-    s = "#{(seconds - r) / week} week" + ((seconds - r) / week > 1 ? "s" : "")
-  elsif seconds >= day
-    r = seconds % day
-    s = "#{(seconds - r) / day} day" + ((seconds - r) / day > 1 ? "s" : "")
-  elsif seconds >= hour
-    r = seconds % hour
-    s = "#{(seconds - r) / hour} hour" + ((seconds - r) / hour > 1 ? "s" : "")
-  elsif seconds >= minute
-    r = seconds % minute
-    s = "#{(seconds - r) / minute} minute" + ((seconds - r) / minute > 1 ? "s" : "")
-  end
-  if r < minute
-    s += " and #{r} seconds"
+# returns a string for the passed seconds using the name and an interval_size
+def unit_for(seconds, name, interval_size)
+  rest = seconds % interval_size
+  units = (seconds - rest) / interval_size
+  str = "#{units} #{name}" + (units > 1 ? "s" : "") # pluralization (s)
+  [rest, str]
+end
+
+# returns a string that represents the seconds as string in english
+def distance_of_time_in_words(seconds)
+  # check the big numbers
+  rest, str = if    seconds >= month  then unit_for(seconds, "month", month)
+              elsif seconds >= week   then unit_for(seconds, "week", week)
+              elsif seconds >= day    then unit_for(seconds, "day", day)
+              elsif seconds >= hour   then unit_for(seconds, "hour", hour)
+              elsif seconds >= minute then unit_for(seconds, "minute", minute)
+              end
+  
+  if rest > 0
+    # add recursive if bigger than a minute otherwise append the seconds
+    str += (rest < minute) ? " and " + units_for(seconds, "second", 1) :
+                             ", "    + distance_of_time_in_words(rest)
   else
-    s += ", #{distance_of_time_in_words(r, false)}"
-  end if r > 0
-  s
+    str # complete units string
+  end
 end
